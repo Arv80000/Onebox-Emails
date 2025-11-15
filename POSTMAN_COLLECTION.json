@@ -1,0 +1,228 @@
+{
+  "info": {
+    "name": "Email Onebox API",
+    "description": "Complete API collection for testing Email Onebox features",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Health Check",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:3000/health",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["health"]
+        }
+      }
+    },
+    {
+      "name": "Get All Emails",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:3000/api/emails",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["api", "emails"]
+        }
+      }
+    },
+    {
+      "name": "Search Emails - Full Text",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:3000/api/emails/search?q=meeting",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["api", "emails", "search"],
+          "query": [
+            {
+              "key": "q",
+              "value": "meeting"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Search Emails - By Category",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:3000/api/emails/search?category=Interested",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["api", "emails", "search"],
+          "query": [
+            {
+              "key": "category",
+              "value": "Interested"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Search Emails - By Account",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:3000/api/emails/search?accountId=account1",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["api", "emails", "search"],
+          "query": [
+            {
+              "key": "accountId",
+              "value": "account1"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Search Emails - Combined Filters",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:3000/api/emails/search?q=interview&category=Interested&accountId=account1",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["api", "emails", "search"],
+          "query": [
+            {
+              "key": "q",
+              "value": "interview"
+            },
+            {
+              "key": "category",
+              "value": "Interested"
+            },
+            {
+              "key": "accountId",
+              "value": "account1"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Get Email by ID",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:3000/api/emails/:emailId",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["api", "emails", ":emailId"],
+          "variable": [
+            {
+              "key": "emailId",
+              "value": "your-email-id-here"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Update Email Category",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"category\": \"Interested\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:3000/api/emails/:emailId/category",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["api", "emails", ":emailId", "category"],
+          "variable": [
+            {
+              "key": "emailId",
+              "value": "your-email-id-here"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Get AI Suggested Reply",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:3000/api/emails/:emailId/suggest-reply",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["api", "emails", ":emailId", "suggest-reply"],
+          "variable": [
+            {
+              "key": "emailId",
+              "value": "your-email-id-here"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Initialize RAG Knowledge Base",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:3000/api/emails/rag/initialize",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["api", "emails", "rag", "initialize"]
+        }
+      }
+    },
+    {
+      "name": "Sync Account",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:3000/api/emails/sync/:accountId",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["api", "emails", "sync", ":accountId"],
+          "variable": [
+            {
+              "key": "accountId",
+              "value": "account1"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

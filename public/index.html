@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Email Onebox - AI-Powered Email Management</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #f5f7fa;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            opacity: 0.9;
+            font-size: 16px;
+        }
+
+        .controls {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .search-bar {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        input[type="text"] {
+            flex: 1;
+            padding: 12px 16px;
+            border: 2px solid #e1e8ed;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        button {
+            padding: 12px 24px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: background 0.3s;
+        }
+
+        button:hover {
+            background: #5568d3;
+        }
+
+        .filters {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        select {
+            padding: 10px 16px;
+            border: 2px solid #e1e8ed;
+            border-radius: 8px;
+            font-size: 14px;
+            background: white;
+            cursor: pointer;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .stat-value {
+            font-size: 32px;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .stat-label {
+            color: #666;
+            margin-top: 5px;
+            font-size: 14px;
+        }
+
+        .email-list {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            overflow: hidden;
+        }
+
+        .email-item {
+            padding: 20px;
+            border-bottom: 1px solid #e1e8ed;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .email-item:hover {
+            background: #f8f9fa;
+        }
+
+        .email-item:last-child {
+            border-bottom: none;
+        }
+
+        .email-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 10px;
+        }
+
+        .email-from {
+            font-weight: 600;
+            color: #333;
+            font-size: 15px;
+        }
+
+        .email-date {
+            color: #666;
+            font-size: 13px;
+        }
+
+        .email-subject {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #1a1a1a;
+        }
+
+        .email-preview {
+            color: #666;
+            font-size: 14px;
+            line-height: 1.5;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+        }
+
+        .email-meta {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .badge-interested {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .badge-meeting {
+            background: #cce5ff;
+            color: #004085;
+        }
+
+        .badge-not-interested {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .badge-spam {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .badge-ooo {
+            background: #e2e3e5;
+            color: #383d41;
+        }
+
+        .badge-uncategorized {
+            background: #f0f0f0;
+            color: #666;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 12px;
+            max-width: 800px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+
+        .modal-header {
+            padding: 24px;
+            border-bottom: 1px solid #e1e8ed;
+        }
+
+        .modal-body {
+            padding: 24px;
+        }
+
+        .modal-footer {
+            padding: 24px;
+            border-top: 1px solid #e1e8ed;
+            display: flex;
+            gap: 10px;
+        }
+
+        .reply-box {
+            margin-top: 20px;
+            padding: 16px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+
+        .reply-label {
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #667eea;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #666;
+        }
+
+        .empty-state-icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+            opacity: 0.3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📧 Email Onebox</h1>
+            <p class="subtitle">AI-Powered Email Management with Real-Time Sync</p>
+        </header>
+
+        <div class="stats">
+            <div class="stat-card">
+                <div class="stat-value" id="totalEmails">0</div>
+                <div class="stat-label">Total Emails</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="interestedCount">0</div>
+                <div class="stat-label">Interested</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="meetingCount">0</div>
+                <div class="stat-label">Meetings Booked</div>
+            </div>
+        </div>
+
+        <div class="controls">
+            <div class="search-bar">
+                <input type="text" id="searchInput" placeholder="Search emails by subject, body, sender...">
+                <button onclick="searchEmails()">🔍 Search</button>
+                <button onclick="loadEmails()">🔄 Refresh</button>
+            </div>
+            <div class="filters">
+                <select id="categoryFilter" onchange="filterEmails()">
+                    <option value="">All Categories</option>
+                    <option value="Interested">Interested</option>
+                    <option value="Meeting Booked">Meeting Booked</option>
+                    <option value="Not Interested">Not Interested</option>
+                    <option value="Spam">Spam</option>
+                    <option value="Out of Office">Out of Office</option>
+                </select>
+                <select id="accountFilter" onchange="filterEmails()">
+                    <option value="">All Accounts</option>
+                    <option value="account1">Account 1</option>
+                    <option value="account2">Account 2</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="email-list" id="emailList">
+            <div class="loading">Loading emails...</div>
+        </div>
+    </div>
+
+    <div class="modal" id="emailModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalSubject"></h2>
+                <div id="modalMeta"></div>
+            </div>
+            <div class="modal-body">
+                <div id="modalBody"></div>
+                <div class="reply-box" id="replyBox" style="display: none;">
+                    <div class="reply-label">💡 AI Suggested Reply</div>
+                    <div id="suggestedReply"></div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button onclick="getSuggestedReply()">✨ Get AI Reply</button>
+                <button onclick="closeModal()">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let allEmails = [];
+        let currentEmail = null;
+
+        async function loadEmails() {
+            try {
+                const response = await fetch('/api/emails');
+                const data = await response.json();
+                
+                if (data.success) {
+                    allEmails = data.emails;
+                    displayEmails(allEmails);
+                    updateStats(allEmails);
+                }
+            } catch (error) {
+                console.error('Error loading emails:', error);
+                document.getElementById('emailList').innerHTML = 
+                    '<div class="empty-state"><div class="empty-state-icon">⚠️</div><p>Error loading emails</p></div>';
+            }
+        }
+
+        function displayEmails(emails) {
+            const emailList = document.getElementById('emailList');
+            
+            if (emails.length === 0) {
+                emailList.innerHTML = 
+                    '<div class="empty-state"><div class="empty-state-icon">📭</div><p>No emails found</p></div>';
+                return;
+            }
+
+            emailList.innerHTML = emails.map(email => `
+                <div class="email-item" onclick="openEmail('${email.id}')">
+                    <div class="email-header">
+                        <div class="email-from">${escapeHtml(email.from)}</div>
+                        <div class="email-date">${formatDate(email.date)}</div>
+                    </div>
+                    <div class="email-subject">${escapeHtml(email.subject)}</div>
+                    <div class="email-preview">${escapeHtml(email.body)}</div>
+                    <div class="email-meta">
+                        ${getCategoryBadge(email.category)}
+                        <span class="badge" style="background: #e9ecef; color: #495057;">${email.accountId}</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function getCategoryBadge(category) {
+            const badges = {
+                'Interested': 'badge-interested',
+                'Meeting Booked': 'badge-meeting',
+                'Not Interested': 'badge-not-interested',
+                'Spam': 'badge-spam',
+                'Out of Office': 'badge-ooo',
+                'Uncategorized': 'badge-uncategorized'
+            };
+            const badgeClass = badges[category] || 'badge-uncategorized';
+            return `<span class="badge ${badgeClass}">${category || 'Uncategorized'}</span>`;
+        }
+
+        function updateStats(emails) {
+            document.getElementById('totalEmails').textContent = emails.length;
+            document.getElementById('interestedCount').textContent = 
+                emails.filter(e => e.category === 'Interested').length;
+            document.getElementById('meetingCount').textContent = 
+                emails.filter(e => e.category === 'Meeting Booked').length;
+        }
+
+        async function searchEmails() {
+            const query = document.getElementById('searchInput').value;
+            const category = document.getElementById('categoryFilter').value;
+            const account = document.getElementById('accountFilter').value;
+
+            let url = '/api/emails/search?';
+            if (query) url += `q=${encodeURIComponent(query)}&`;
+            if (category) url += `category=${encodeURIComponent(category)}&`;
+            if (account) url += `accountId=${encodeURIComponent(account)}&`;
+
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+                
+                if (data.success) {
+                    allEmails = data.emails;
+                    displayEmails(allEmails);
+                    updateStats(allEmails);
+                }
+            } catch (error) {
+                console.error('Error searching emails:', error);
+            }
+        }
+
+        function filterEmails() {
+            searchEmails();
+        }
+
+        async function openEmail(emailId) {
+            const email = allEmails.find(e => e.id === emailId);
+            if (!email) return;
+
+            currentEmail = email;
+            document.getElementById('modalSubject').textContent = email.subject;
+            document.getElementById('modalMeta').innerHTML = `
+                <div style="margin-top: 10px; color: #666;">
+                    <div><strong>From:</strong> ${escapeHtml(email.from)}</div>
+                    <div><strong>Date:</strong> ${formatDate(email.date)}</div>
+                    <div style="margin-top: 10px;">${getCategoryBadge(email.category)}</div>
+                </div>
+            `;
+            document.getElementById('modalBody').innerHTML = `<div style="white-space: pre-wrap;">${escapeHtml(email.body)}</div>`;
+            document.getElementById('replyBox').style.display = 'none';
+            document.getElementById('emailModal').classList.add('active');
+        }
+
+        async function getSuggestedReply() {
+            if (!currentEmail) return;
+
+            document.getElementById('suggestedReply').innerHTML = '<div style="color: #666;">Generating reply...</div>';
+            document.getElementById('replyBox').style.display = 'block';
+
+            try {
+                const response = await fetch(`/api/emails/${currentEmail.id}/suggest-reply`, {
+                    method: 'POST'
+                });
+                const data = await response.json();
+                
+                if (data.success) {
+                    document.getElementById('suggestedReply').innerHTML = 
+                        `<div style="white-space: pre-wrap;">${escapeHtml(data.suggestion.suggestedReply)}</div>`;
+                }
+            } catch (error) {
+                console.error('Error getting suggested reply:', error);
+                document.getElementById('suggestedReply').innerHTML = 
+                    '<div style="color: #dc3545;">Error generating reply</div>';
+            }
+        }
+
+        function closeModal() {
+            document.getElementById('emailModal').classList.remove('active');
+            currentEmail = null;
+        }
+
+        function formatDate(date) {
+            return new Date(date).toLocaleString();
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Load emails on page load
+        loadEmails();
+
+        // Refresh every 30 seconds
+        setInterval(loadEmails, 30000);
+
+        // Close modal on outside click
+        document.getElementById('emailModal').addEventListener('click', (e) => {
+            if (e.target.id === 'emailModal') {
+                closeModal();
+            }
+        });
+
+        // Search on Enter key
+        document.getElementById('searchInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                searchEmails();
+            }
+        });
+    </script>
+</body>
+</html>
